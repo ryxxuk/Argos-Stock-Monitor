@@ -1,0 +1,92 @@
+﻿{
+  "items": [
+    {
+      "productSku": "7043321",
+      "useProxy": true,
+      "interval": 30,
+      "locations": [
+        { "postcode": "HD75UX" },
+        { "postcode": "LE159AZ" },
+        { "postcode": "WR65SF" },
+        { "postcode": "IP215LP" },
+        { "postcode": "TN233RJ" },
+        { "postcode": "EC1R4TY" },
+        { "postcode": "SN82LQ" },
+        { "postcode": "KA20JW" },
+        { "postcode": "PO119SU" }
+
+      ],
+      "webhooks": [
+        {
+          "url": "https://discord.com/api/webhooks/822478686274977812/zO1Y6AnGQKcRo45N0LIZdgma9-vqn55f6e__E_p_u79qrK3cGL2J1T2hHotJj_IFiSoJ"
+        },
+        {
+          "url": "https://discord.com/api/webhooks/781464042228416543/9fPar2hXP9GqmgbstzVvEkFL6EMrY9lymNUkwWRi7LvzqhWbyWWmI5sCG8eWetCIXTOy"
+        },
+        {
+          "url": "https://discord.com/api/webhooks/827641307265761361/H5F6n3cNrU6hFora8ynALWTje48ZiGc1M65Q1QGoYLzTTuAsTmxD89nkKOQdV0KMd_t1"
+        },
+        {
+          "url": "https://discord.com/api/webhooks/827690091811176478/vKQTRN9tFGK_2RD4mk3BicdBCoygM0twYtTRYzcKyxLrEpYHr0CdcDSwuDwILssIFXES"
+        }
+      ]
+    },
+    {
+      "productSku": "8709671",
+      "useProxy": true,
+      "interval": 30,
+      "locations": [
+        { "postcode": "HD75UX" },
+        { "postcode": "LE159AZ" },
+        { "postcode": "WR65SF" },
+        { "postcode": "IP215LP" },
+        { "postcode": "TN233RJ" },
+        { "postcode": "EC1R4TY" },
+        { "postcode": "SN82LQ" },
+        { "postcode": "KA20JW" },
+        { "postcode": "PO119SU" }
+
+      ],
+      "webhooks": [
+        {
+          "url": "https://discord.com/api/webhooks/822478686274977812/zO1Y6AnGQKcRo45N0LIZdgma9-vqn55f6e__E_p_u79qrK3cGL2J1T2hHotJj_IFiSoJ"
+        },
+        {
+          "url": "https://discord.com/api/webhooks/781464042228416543/9fPar2hXP9GqmgbstzVvEkFL6EMrY9lymNUkwWRi7LvzqhWbyWWmI5sCG8eWetCIXTOy"
+        },
+        {
+          "url": "https://discord.com/api/webhooks/827641307265761361/H5F6n3cNrU6hFora8ynALWTje48ZiGc1M65Q1QGoYLzTTuAsTmxD89nkKOQdV0KMd_t1"
+        },
+        {
+          "url": "https://discord.com/api/webhooks/827690091811176478/vKQTRN9tFGK_2RD4mk3BicdBCoygM0twYtTRYzcKyxLrEpYHr0CdcDSwuDwILssIFXES"
+        }
+      ]
+    },
+    {
+      "productSku": "3106437",
+      "useProxy": false,
+      "interval": 30,
+      "locations": [
+        { "postcode": "IP215JE" }
+      ],
+      "webhooks": [
+        {
+          "url": "https://discord.com/api/webhooks/822478686274977812/zO1Y6AnGQKcRo45N0LIZdgma9-vqn55f6e__E_p_u79qrK3cGL2J1T2hHotJj_IFiSoJ"
+        },
+        {
+          "url": "https://discord.com/api/webhooks/781464042228416543/9fPar2hXP9GqmgbstzVvEkFL6EMrY9lymNUkwWRi7LvzqhWbyWWmI5sCG8eWetCIXTOy"
+        },
+        {
+          "url": "https://discord.com/api/webhooks/827641307265761361/H5F6n3cNrU6hFora8ynALWTje48ZiGc1M65Q1QGoYLzTTuAsTmxD89nkKOQdV0KMd_t1"
+        },
+        {
+          "url": "https://discord.com/api/webhooks/827690091811176478/vKQTRN9tFGK_2RD4mk3BicdBCoygM0twYtTRYzcKyxLrEpYHr0CdcDSwuDwILssIFXES"
+        },
+        {
+          "url": "https://discord.com/api/webhooks/827690091811176478/vKQTRN9tFGK_2RD4mk3BicdBCoygM0twYtTRYzcKyxLrEpYHr0CdcDSwuDwILssIFXES"
+        }
+      ]
+    }
+  ]
+}
+  
