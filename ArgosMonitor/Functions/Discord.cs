@@ -9,33 +9,53 @@ using Discord.Webhook;
 namespace ArgosMonitor.Functions
 {
     class Discord
-    { 
+    {
         public static async void NotifyDiscordAsync(MonitorTask monitorTask, List<string> availability)
         {
+            try
+            {
+                if (!CheckIfNotifyAllowed(monitorTask.product.productSku))
+                {
+                    OutputToFile.WriteLine("\nAlready notified for this restock on one postcode! Reducing spam!");
+                    return;
+                }
+            }
+            catch (Exception e)
+            {
+                OutputToFile.WriteLine(e.ToString());
+            }
+
+
             var embed = new EmbedBuilder();
 
             var embeds = new List<Embed>();
 
-            //var message = availability.Aggregate("", (current, location) => current + "\n");
-
             var message = "";
 
-            foreach (var store in availability)
+            for (var i = 0; i < availability.Count; i++)
             {
-                message += store + "\n";
+                message += availability[i] + "\n";
+
+                if (i > 5) break;
             }
 
-            if (message.Length > 1024)
+            if (availability.Count > 5)
             {
-                message = message.Substring(0, 994);
-                message += "\n... And many others";
+                message += $"\nPlus {availability.Count - 5} other stores in the area!";
             }
+
+            message += $"\n**Make sure to check your postcode too!**";
 
             embeds.Add(embed
                 .WithAuthor("New stock found on Argos!")
                 .WithFooter("RYXX Monitors | @ryxxuk")
                 .WithColor(Color.Blue)
                 .WithTitle(monitorTask.product.itemName)
+                .WithFields(new EmbedFieldBuilder
+                {
+                    Name = "Postcode Checked:",
+                    Value = monitorTask.postcode
+                })
                 .WithFields(new EmbedFieldBuilder
                 {
                     Name = "Available at:",
@@ -52,6 +72,25 @@ namespace ArgosMonitor.Functions
             {
                 await client.SendMessageAsync("", false, embeds: embeds);
             }
+        }
+
+        private static bool CheckIfNotifyAllowed(string productProductSku)
+        {
+            if (Program.lastNotified.ContainsKey(productProductSku))
+            {
+                var allowed = Program.lastNotified[productProductSku].AddMinutes(1) < DateTime.Now;
+
+                if (allowed)
+                {
+                    Program.lastNotified[productProductSku] = DateTime.Now;
+                }
+
+                return allowed;
+            }
+            
+            Program.lastNotified.Add(productProductSku, DateTime.Now);
+
+            return true;
         }
     }
 }

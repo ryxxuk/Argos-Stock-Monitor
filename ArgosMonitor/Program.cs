@@ -28,9 +28,13 @@ namespace ArgosMonitor
         private bool _showAllLogs = false;
         private int _taskNumber = 1;
 
+        public static Dictionary<string, DateTime> lastNotified;
+
         private static void Main()
         {
-            OutputToFile.WriteLine(@"
+            try
+            {
+                OutputToFile.WriteLine(@"
   ______   ____  ____  __  __  __             _ _                 
  |  _ \ \ / /\ \/ /\ \/ / |  \/  | ___  _ __ (_) |_ ___  _ __ ___ 
  | |_) \ V /  \  /  \  /  | |\/| |/ _ \| '_ \| | __/ _ \| '__/ __|
@@ -38,63 +42,22 @@ namespace ArgosMonitor
  |_| \_\|_|  /_/\_\/_/\_\ |_|  |_|\___/|_| |_|_|\__\___/|_|  |___/
 ");
 
-            var app = new Program();
+                var app = new Program();
 
-            app.Monitor();
+                lastNotified = new Dictionary<string, DateTime>();
+
+                app.StartAllTasksAsync();
+
+                Console.ReadLine();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
+            }
 
             Console.ReadLine();
         }
-
-        public void Monitor()
-        {
-            OutputToFile.Write("MENU - Main Menu\nEXIT - Exits Program\n\nVIEW - View current monitor requests\nHIDE - Hide current monitor request\n\nSTART - start product tasks to be monitored from file\nSTOPTASK - delete monitor task\n");
-            var input = Console.ReadLine()?.ToLower();
-
-            while (input != "exit")
-            {
-                switch (input)
-                {
-                    case "start":
-                        _showAllLogs = false;
-
-                        StartAllTasksAsync();
-
-                        _showAllLogs = true;
-                        input = Console.ReadLine()?.ToLower();
-                        break;
-                    case "stoptask":
-                        _showAllLogs = false;
-
-                        OutputToFile.WriteLine("Enter the task number you want to stop");
-                        int.TryParse(Console.ReadLine(), out var taskId);
-
-                        StopTask(taskId);
-
-                        _showAllLogs = true;
-                        input = Console.ReadLine()?.ToLower();
-                        break;
-                    case "view":
-                        _showAllLogs = true;
-
-                        OutputToFile.WriteLine("Showing all requests");
-
-                        input = Console.ReadLine()?.ToLower();
-                        break;
-                    case "hide":
-                        _showAllLogs = false;
-
-                        OutputToFile.WriteLine("Showing only available requests");
-
-                        input = Console.ReadLine()?.ToLower();
-                        break;
-                    default:
-                        OutputToFile.WriteLine("Please enter a valid option.");
-                        input = Console.ReadLine()?.ToLower();
-                        break;
-                }
-            }
-        }
-
+        
         public void StartNewTask(MonitorTask task)
         {
             OutputToFile.WriteLine("Grabbing sessionId cookie...");
@@ -152,7 +115,7 @@ namespace ArgosMonitor
         public async Task<List<MonitorTask>> LoadTasksFromFile()
         {
             var taskToBeStarted = new List<MonitorTask>();
-            dynamic responseObject = JObject.Parse(FormatJson(File.ReadAllText(Directory.GetCurrentDirectory() + @"\items.json")));
+            dynamic responseObject = JObject.Parse(FormatJson(await File.ReadAllTextAsync(Directory.GetCurrentDirectory() + @"\items.json")));
 
             for (var i = 0; i < responseObject.items.Count; i++)
             {
@@ -213,7 +176,7 @@ namespace ArgosMonitor
             task.product.availability = new Dictionary<string, bool> {{$"Delivery to {task.postcode}", false}};
             var stopWatch = new Stopwatch();
 
-            OutputToFile.Write($"Product {task.product.productSku} monitor request on thread {task.taskNumber} restarted for postcode {task.postcode}\n");
+            OutputToFile.WriteLine($"Product {task.product.productSku} monitor request on thread {task.taskNumber} restarted for postcode {task.postcode}");
             try
             {
                 while (_monitoredItems[task.taskNumber].isRunning)
@@ -232,19 +195,17 @@ namespace ArgosMonitor
 
                     if (newStockLocations.Any())
                     {
-                        OutputToFile.Write($"[{task.postcode}] ({DateAndTime.Now}) - New stock locations found for {task.product.itemName}! Notifying discord!");
+                        OutputToFile.WriteLine($"[{task.postcode}] ({DateAndTime.Now}) - New stock locations found for {task.product.itemName}! Notifying discord!");
                         Functions.Discord.NotifyDiscordAsync(task, newStockLocations);
                     }
                     else
                     {
-                        OutputToFile.Write($"[{task.postcode}] ({DateAndTime.Now}) - No new stock locations for {task.product.itemName}.");
+                        OutputToFile.WriteLine($"[{task.postcode}] ({DateAndTime.Now}) - No new stock locations for {task.product.itemName}.");
                     }
 
-                    
-                    if (_showAllLogs) OutputToFile.Write(" - request took: " + stopWatch.ElapsedMilliseconds + "ms\n");
+                    if (_showAllLogs) OutputToFile.Write(" - request took: " + stopWatch.ElapsedMilliseconds + "ms");
 
                     task.product.availability = availability;
-                    if (newStockLocations.Any()) Thread.Sleep(task.interval * 3);
                     Thread.Sleep(task.interval);
                     stopWatch.Reset();
                 }

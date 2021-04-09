@@ -29,7 +29,6 @@ namespace ArgosMonitor.Functions
 
             using var handler = new HttpClientHandler
             {
-                UseCookies = true,
                 CookieContainer = task.cookies,
                 AutomaticDecompression = DecompressionMethods.GZip,
             };
@@ -50,9 +49,8 @@ namespace ArgosMonitor.Functions
 
             request.Headers.Add("Accept", "application/json");
             request.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.66 Safari/537.36");
-            request.Headers.Add("sessionId", "");
 
-            var response = await client.SendAsync(request);
+            var response = await client.SendAsync(request).ConfigureAwait(false);
             var attempts = 0;
 
             while (!response.IsSuccessStatusCode)

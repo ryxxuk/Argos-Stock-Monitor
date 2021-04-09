@@ -34,7 +34,7 @@ namespace ArgosMonitor.Functions
         public static void WriteLine(string str)
         {
             Console.WriteLine(str);
-            outputToFileSingleton.sw.WriteLine(str);
+            outputToFileSingleton.sw.WriteLine("\n" + str);
         }
 
         public static void Write(string str)
