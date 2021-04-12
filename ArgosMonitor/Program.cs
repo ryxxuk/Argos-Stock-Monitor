@@ -23,12 +23,16 @@ namespace ArgosMonitor
     class Program
     {
         private Dictionary<int, MonitorTask> _monitoredItems = new Dictionary<int, MonitorTask>();
-        private Dictionary<WebProxy, int> _proxies = new Dictionary<WebProxy, int>();
+        private readonly Dictionary<WebProxy, int> _proxies = new Dictionary<WebProxy, int>();
+
+        private int requestNum = 0;
+        private int discordPings = 0;
+        private int errors = 0;
 
         private bool _showAllLogs = false;
         private int _taskNumber = 1;
 
-        public static Dictionary<string, DateTime> lastNotified;
+        public static Dictionary<string, DateTime> LastNotified;
 
         private static void Main()
         {
@@ -44,7 +48,7 @@ namespace ArgosMonitor
 
                 var app = new Program();
 
-                lastNotified = new Dictionary<string, DateTime>();
+                LastNotified = new Dictionary<string, DateTime>();
 
                 app.StartAllTasksAsync();
 
@@ -96,19 +100,6 @@ namespace ArgosMonitor
                 OutputToFile.WriteLine($"Staggering monitor start up... Waiting 5s");
                 Thread.Sleep(5000);
                 _taskNumber++;
-            }
-        }
-
-        public void StopTask(int taskId)
-        {
-            if (_monitoredItems.ContainsKey(taskId))
-            {
-                _monitoredItems[taskId].isRunning = false;
-                OutputToFile.WriteLine("Task stopped");
-            }
-            else
-            {
-                OutputToFile.WriteLine("Invalid task Id, not stopping any tasks");
             }
         }
 
@@ -197,6 +188,7 @@ namespace ArgosMonitor
                     {
                         OutputToFile.WriteLine($"[{task.postcode}] ({DateAndTime.Now}) - New stock locations found for {task.product.itemName}! Notifying discord!");
                         Functions.Discord.NotifyDiscordAsync(task, newStockLocations);
+                        discordPings++;
                     }
                     else
                     {
@@ -204,10 +196,11 @@ namespace ArgosMonitor
                     }
 
                     if (_showAllLogs) OutputToFile.Write(" - request took: " + stopWatch.ElapsedMilliseconds + "ms");
-
+                    requestNum++;
                     task.product.availability = availability;
-                    Thread.Sleep(task.interval);
+                    UpdateTitle();
                     stopWatch.Reset();
+                    Thread.Sleep(task.interval);
                 }
             }
             catch (Exception e)
@@ -217,8 +210,11 @@ namespace ArgosMonitor
 
                 _monitoredItems[task.taskNumber].isRunning = false;
 
-                Thread.Sleep(1000);
-                StartNewTask(task);
+                errors++;
+                UpdateTitle();
+
+                Thread.Sleep(1800000); // wait 30 mins
+                Task.Run(() => StartNewTask(task)); 
             }
         }
 
@@ -303,12 +299,12 @@ namespace ArgosMonitor
             var random = new Random();
             var randomIndex = random.Next(_proxies.Count);
 
-            var randomProxy = _proxies.ElementAt(randomIndex);
+            KeyValuePair<WebProxy, int> randomProxy;
 
             do
             {
-                randomProxy = _proxies.ElementAt(randomIndex);
-            } while (randomProxy.Value > 2);
+                randomProxy = _proxies.ElementAt(randomIndex); // could get infinite loop here
+            } while (randomProxy.Value > 4);
 
             OutputToFile.WriteLine($"Trying following proxy: {randomIndex}");
 
@@ -345,5 +341,9 @@ namespace ArgosMonitor
             return changedStock.Any();
         }
 
+        public void UpdateTitle()
+        {
+            Console.Title = $"Requests Made: {requestNum} | Discord Pings: {discordPings} | Errors: {errors}";
+        }
     }
 }

@@ -14,6 +14,15 @@ namespace ArgosMonitor.Functions
         public static async Task<string> GetProductName(string sku)
         {
             string title;
+
+            switch (sku)
+            {
+                case "8349024":
+                    return "Sony PlayStation 5 Digital Console";
+                case "8349000":
+                    return "Sony PlayStation 5 Console";
+            }
+
             try
             {
                 var url = $"https://www.argos.co.uk/product/{sku}";

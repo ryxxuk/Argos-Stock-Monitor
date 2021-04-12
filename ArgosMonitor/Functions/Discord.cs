@@ -76,19 +76,29 @@ namespace ArgosMonitor.Functions
 
         private static bool CheckIfNotifyAllowed(string productProductSku)
         {
-            if (Program.lastNotified.ContainsKey(productProductSku))
+            switch (productProductSku)
             {
-                var allowed = Program.lastNotified[productProductSku].AddMinutes(1) < DateTime.Now;
+                case "8349024":
+                    return true;
+                case "8349000":
+                    return true;
+            }
+
+
+
+            if (Program.LastNotified.ContainsKey(productProductSku))
+            {
+                var allowed = Program.LastNotified[productProductSku].AddMinutes(1) < DateTime.Now;
 
                 if (allowed)
                 {
-                    Program.lastNotified[productProductSku] = DateTime.Now;
+                    Program.LastNotified[productProductSku] = DateTime.Now;
                 }
 
                 return allowed;
             }
             
-            Program.lastNotified.Add(productProductSku, DateTime.Now);
+            Program.LastNotified.Add(productProductSku, DateTime.Now);
 
             return true;
         }
